@@ -1,49 +1,116 @@
 <template>
-    <section>
+  <section>
+    <div class="columns">
+      <div class="column">
         <b-field label="Plant Name">
-            <b-input v-model="query.name"></b-input>
+          <b-input v-model.lazy="plantName"></b-input>
         </b-field>
+      </div>
+      <div class="column">
         <b-field label="Start date">
-            <b-datepicker
-                placeholder="Click to select..."
-                icon="calendar-today"
-                v-model="query.startDate">
-            </b-datepicker>
+          <b-datepicker
+            placeholder="Click to select..."
+            icon="calendar-today"
+            v-model.lazy="startDate"
+          ></b-datepicker>
         </b-field>
+      </div>
+      <div class="column">
         <b-field label="End date">
-            <b-datepicker
-                placeholder="Click to select..."
-                icon="calendar-today"
-                v-model="query.endDate"
-                type=.modal-card-body
-                >
-            </b-datepicker>
+          <b-datepicker
+            placeholder="Click to select..."
+            icon="calendar-today"
+            v-model.lazy="endDate"
+          ></b-datepicker>
         </b-field>
-        <button 
-            class="button is-primary is-outlined"
-            v-on:click="submit">
-            Submit
-        </button>
-    </section>
+      </div>
+    </div>
+    <div>
+      <button style="float:left" class="button field is-danger" @click="selected = null" :disabled="!selected">
+        <b-icon icon="close"></b-icon>
+        <span>Clear selected</span>
+      </button>
+        <b-table :data="availablePlatnts" :columns="columns" :selected.sync="selected" focusable></b-table>
+    </div>
+  </section>
 </template>
 
 <script>
 export default {
-    name: "CatalogQuery",
-    data: function() {
-        return {
-            query: {
-                name: "",
-                startDate: undefined,
-                endDate: undefined
-            }
+  name: "CatalogQuery",
+  data: function() {
+    return {
+      plantName: "",
+      startDate: null,
+      endDate: null,
+      availablePlatnts: [],
+      selected: null,
+      columns: [
+        {
+          field: "_id",
+          label: "ID",
+          width: "40",
+          numeric: true
+        },
+        {
+          field: "name",
+          label: "Name"
+        },
+        {
+          field: "price",
+          label: "Price",
+          centered: true
+        },
+        {
+          field: "_links",
+          label: "links"
         }
+      ]
+    };
+  },
+  watch: {
+    plantName: function() {
+      this.getPlants();
+      this.selected=null;
     },
-    methods:{
-        submit: function() {
-            console.log(this.query);
-            this.$emit("submitCatalogQuery", this.query)
-        }
+    startDate: function() {
+      this.getPlants();
+      this.selected=null;
+    },
+    endDate: function() {
+      this.getPlants();
+      this.selected=null;
+    },
+    selected: function(){
+        this.$emit("selectPlant", (this.selected != null ? this.selected._id : null));
     }
-}
+  },
+  methods: {
+    getPlants() {
+      const start = this.formatDate(this.startDate);
+      const end = this.formatDate(this.endDate);
+      this.$api
+        .get(
+          `inventory/plants?name=${this.plantName}&startDate=${start}&endDate=${end}`
+        )
+        .then(data => {
+          this.availablePlatnts = data.data;
+        });
+    },
+    formatDate(date) {
+      if (date != null) {
+        const d = new Date(date);
+        const ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(d);
+        const mo = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(
+          d
+        );
+        const da = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(d);
+        return `${ye}-${mo}-${da}`;
+      } else return "";
+    }
+  },
+  mounted() {
+    this.getPlants();
+  }
+};
 </script>

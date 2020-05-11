@@ -5,7 +5,7 @@
     </header>
     <section class="modal-card-body">
 
-  <div v-if="collection instanceof Array && collection.length > 0">
+  <!-- <div v-if="collection">
   <table class="table is-striped is-fullwidth">
     <thead>
         <tr>
@@ -34,7 +34,7 @@
         </tr>
     </tbody>
   </table>
-  </div>
+  </div> -->
   <div class="card">
     <header class="card-header">
         <p class="card-header-title">Submit new {{title.slice(0,-1)}}</p>
@@ -61,7 +61,10 @@ export default {
     props: ['collection', 'title', 'template', 'url'],
     data() {
         return {
-            data: {}
+            data: {},
+            collection1: {
+
+            }
         }
     },
     methods: {

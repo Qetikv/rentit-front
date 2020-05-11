@@ -12,6 +12,13 @@ export default {
   name: 'home',
   components: {
     HelloWorld
+  },
+
+  methods:{
+   
+  },
+  mounted(){
   }
+
 }
 </script>
