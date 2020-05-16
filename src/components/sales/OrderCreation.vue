@@ -9,7 +9,10 @@
             </query-result>
       </b-tab-item>-->
       <b-tab-item label="Purchase Plant">
-        <order-data @submitPurchaseOrder="handlePOCreation" v-bind:plantId="selectedPlantId"></order-data>
+        <order-data v-bind:plantId="selectedPlantId"></order-data>
+      </b-tab-item>
+      <b-tab-item label="Maintenance Task" :disabled="plantNotSelected">
+        <maintenance-task v-bind:plantId="selectedPlantId" v-if="plantNotSelected == false"></maintenance-task>
       </b-tab-item>
     </b-tabs>
   </section>
@@ -19,15 +22,17 @@
 import CatalogQuery from "./CatalogQuery.vue";
 // import QueryResult from "./QueryResult.vue";
 import OrderData from "./OrderData.vue";
+import MaintenanceTask from "./MaintenanceTask.vue";
 
-import axios from "axios";
+// import axios from "axios";
 
 export default {
   name: "OrderCreation",
   components: {
     CatalogQuery,
     // QueryResult,
-    OrderData
+    OrderData,
+    MaintenanceTask
   },
   data: function() {
     return {
@@ -37,8 +42,14 @@ export default {
         plant: {},
         rentalPeriod: {}
       },
-    selectedPlantId: null
+    selectedPlantId: null,
+    // plantNotSelected: true
     };
+  },
+  computed: {
+    plantNotSelected: function(){
+      return this.selectedPlantId == null ? true : false
+    }
   },
   methods: {
     setPlant(value){
@@ -78,36 +89,36 @@ export default {
     //     this.order.plant = plant;
     //     this.activeTab = 2;
     // },
-    handlePOCreation: function() {
-      let body = {
-        plant: {
-          _id: this.order.plant._id,
-          name: this.order.plant.name,
-          description: this.order.plant.description,
-          price: this.order.plant.price
-        },
-        rentalPeriod: {
-          startDate: this.order.rentalPeriod.startDate,
-          endDate: this.order.rentalPeriod.endDate
-        },
-        status: "OPEN"
-      };
-      axios
-        .post("http://localhost:8090/api/sales/orders", body)
-        .then(response => {
-          console.log(response.message);
-          this.$buefy.snackbar.open(
-            "Purchase order submitted. Waiting for confirmation."
-          );
-        })
-        .catch(error => {
-          console.log(error.message);
-          this.$buefy.snackbar.open({
-            type: "is-danger",
-            message: "Something went wrong with purchase order submition."
-          });
-        });
-    }
+    // handlePOCreation: function() {
+    //   let body = {
+    //     plant: {
+    //       _id: this.order.plant._id,
+    //       name: this.order.plant.name,
+    //       description: this.order.plant.description,
+    //       price: this.order.plant.price
+    //     },
+    //     rentalPeriod: {
+    //       startDate: this.order.rentalPeriod.startDate,
+    //       endDate: this.order.rentalPeriod.endDate
+    //     },
+    //     status: "OPEN"
+    //   };
+    //   axios
+    //     .post("http://localhost:8090/api/sales/orders", body)
+    //     .then(response => {
+    //       console.log(response.message);
+    //       this.$buefy.snackbar.open(
+    //         "Purchase order submitted. Waiting for confirmation."
+    //       );
+    //     })
+    //     .catch(error => {
+    //       console.log(error.message);
+    //       this.$buefy.snackbar.open({
+    //         type: "is-danger",
+    //         message: "Something went wrong with purchase order submition."
+    //       });
+    //     });
+    // }
   }
 };
 </script>

@@ -7,22 +7,18 @@
             <b-datepicker
               placeholder="Click to select..."
               icon="calendar-today"
-              v-model.lazy="startDate"
+              v-model="startDate"
             ></b-datepicker>
           </b-field>
         </div>
         <div class="column">
           <b-field label="End date *">
-            <b-datepicker
-              placeholder="Click to select..."
-              icon="calendar-today"
-              v-model.lazy="endDate"
-            ></b-datepicker>
+            <b-datepicker placeholder="Click to select..." icon="calendar-today" v-model="endDate"></b-datepicker>
           </b-field>
         </div>
         <div class="column">
           <b-field label="Customer Email *">
-            <b-input v-model="customerEmail"></b-input>
+            <b-input type="email" message="This email is invalid" v-model="customerEmail"></b-input>
           </b-field>
         </div>
         <div class="column">
@@ -30,26 +26,26 @@
             <b-input v-model="siteAddress"></b-input>
           </b-field>
         </div>
-        <div class="column" style="display: flex;align-items: flex-end;">
+        <div class="column">
           <button
             class="button is-primary"
             v-on:click="submitPO"
             :disabled="!plantId"
           >Create Purchase Order</button>
         </div>
-        <div class="column" style="display: flex;align-items: flex-end;color:red">
+        <div class="column" style="color:red">
           <p v-if="plantId!=null">Plant selected</p>
           <p v-else>Select Plant from the availbale plants list</p>
         </div>
       </div>
     </section>
-<!-- accept reject cancel
+    <!-- accept reject cancel
  if accept 
    dispatch cancel
    if dispatch
      deliver refuse
        if deliver 
-         return -->
+    return-->
     <table class="table is-table-bordered is-table-striped is-fullwidth">
       <thead>
         <tr>
@@ -71,13 +67,37 @@
           <td>{{order.plant.price}}</td>
           <td>{{order.total}}</td>
           <td>
-            <router-link class="button is-success is-outlined" :to="`/edit-order/${order._id}`" >Edit</router-link>
-            <button v-if="order._links.accept" v-on:click="sendPOrequest(order._links.accept.href)" class="button is-success is-outlined" >Accept</button>
-            <button v-if="order._links.cancel" v-on:click="sendPOrequest(order._links.cancel.href)" class="button is-warnign is-outlined">Cancel</button>
-            <button v-if="order._links.reject" v-on:click="sendPOrequest(order._links.reject.href)" class="button is-danger is-outlined">Reject</button>
-            <button v-if="order._links.dispatch" v-on:click="sendPOrequest(order._links.reject.href)" class="button is-warnign is-outlined">Dispatch</button>
-            <button v-if="order._links.refuse" v-on:click="sendPOrequest(order._links.reject.href)" class="button is-warnign is-outlined">Refuse</button>
-            <button v-if="order._links.deliver" v-on:click="sendPOrequest(order._links.reject.href)" class="button is-warnign is-outlined">Deliver</button>
+            <router-link class="button is-success is-outlined" :to="`/edit-order/${order._id}`">Edit</router-link>
+            <button
+              v-if="order._links.accept"
+              v-on:click="sendPOrequest(order._links.accept.href)"
+              class="button is-success is-outlined"
+            >Accept</button>
+            <button
+              v-if="order._links.cancel"
+              v-on:click="sendPOrequest(order._links.cancel.href)"
+              class="button is-warnign is-outlined"
+            >Cancel</button>
+            <button
+              v-if="order._links.reject"
+              v-on:click="sendPOrequest(order._links.reject.href)"
+              class="button is-danger is-outlined"
+            >Reject</button>
+            <button
+              v-if="order._links.dispatch"
+              v-on:click="sendPOrequest(order._links.reject.href)"
+              class="button is-warnign is-outlined"
+            >Dispatch</button>
+            <button
+              v-if="order._links.refuse"
+              v-on:click="sendPOrequest(order._links.reject.href)"
+              class="button is-warnign is-outlined"
+            >Refuse</button>
+            <button
+              v-if="order._links.deliver"
+              v-on:click="sendPOrequest(order._links.reject.href)"
+              class="button is-warnign is-outlined"
+            >Deliver</button>
           </td>
         </tr>
       </tbody>
@@ -96,39 +116,44 @@ export default {
       startDate: undefined,
       endDate: undefined,
       availablePlatnts: [],
-      orders: [],  
+      orders: []
     };
   },
   methods: {
-    sendPOrequest(url){
+    sendPOrequest(url) {
       this.$api
         .patch(`${url}/`)
-        .then((data) => {
+        .then(data => {
           console.log(data);
-          this.getOrders()
+          this.getOrders();
         })
         .catch(error => {
           console.log(error.message);
-        });     
+        });
     },
     validatePO() {
-      const today = new Date()
-      if (this.startDate == null || this.endDate == null || this.customerEmail == null || this.siteAddress == null)
-            this.$buefy.snackbar.open({
-                type: "is-danger",
-                message: "Fill the stared inputs!"
-            });
-        else if(this.startDate > this.endDate )    
-            this.$buefy.snackbar.open({
-                type: "is-danger",
-                message: "Start should be greater!"
-            });
-        else if(this.startDate < today || this.endDate < today)
-            this.$buefy.snackbar.open({
-                type: "is-danger",
-                message: "Dates should be greater than today!"
-            });
-        else return true;
+      const today = new Date();
+      if (
+        this.startDate == null ||
+        this.endDate == null ||
+        this.customerEmail == null ||
+        this.siteAddress == null
+      )
+        this.$buefy.snackbar.open({
+          type: "is-danger",
+          message: "Fill the stared inputs!"
+        });
+      else if (this.startDate > this.endDate)
+        this.$buefy.snackbar.open({
+          type: "is-danger",
+          message: "Start should be greater!"
+        });
+      else if (this.startDate < today || this.endDate < today)
+        this.$buefy.snackbar.open({
+          type: "is-danger",
+          message: "Dates should be greater than today!"
+        });
+      else return true;
     },
     generatePOBody() {
       const body = {
@@ -156,9 +181,9 @@ export default {
       if (this.validatePO()) {
         this.$api
           .post("sales/orders/", this.generatePOBody())
-          .then(data => { 
+          .then(data => {
             console.log(data);
-            this.getOrders()
+            this.getOrders();
           })
           .catch(error => {
             this.$buefy.snackbar.open({
@@ -173,8 +198,6 @@ export default {
         .get(`sales/orders/`)
         .then(data => {
           this.orders = data.data;
-          console.log(data.data);
-          
         })
         .catch(error => {
           console.log(error.message);
@@ -187,7 +210,6 @@ export default {
 };
 </script>
 <style>
-
 </style>
 
 
