@@ -24,6 +24,9 @@
           ></b-datepicker>
         </b-field>
       </div>
+      <div class="column">
+        <button class="button is-primary" @click="clear">Clear</button>
+      </div>
     </div>
     <div>
       <button style="float:left" class="button field is-danger" @click="selected = null" :disabled="!selected">
@@ -57,14 +60,14 @@ export default {
           label: "Name"
         },
         {
+          field: "description",
+          label: "description"
+        },
+        {
           field: "price",
           label: "Price",
           centered: true
         },
-        {
-          field: "_links",
-          label: "links"
-        }
       ]
     };
   },
@@ -86,6 +89,11 @@ export default {
     }
   },
   methods: {
+    clear(){
+      this.plantName = ""
+      this.startDate = null
+      this.endDate = null
+    },
     getPlants() {
       const start = this.formatDate(this.startDate);
       const end = this.formatDate(this.endDate);

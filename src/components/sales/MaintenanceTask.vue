@@ -56,7 +56,7 @@
           <th class="has-text-center">End Date</th>
           <th class="has-text-center">Price</th>
           <th class="has-text-center">Type Of Work</th>
-          <th class="has-text-center">Actions</th>
+          <!-- <th class="has-text-center">Actions</th> -->
         </tr>
       </thead>
       <tbody v-if="tasks">
@@ -80,12 +80,16 @@ export default {
     return {
       startDate: undefined,
       endDate: undefined,
-      typeOfWork: "",
-      price: "",
-      description: "",
-      availablePlatnts: [],
+      typeOfWork: null,
+      price: null,
+      description: null,
       tasks: []
     };
+  },
+  watch: {
+    plantId: function(){
+      this.getTasks()  
+    }
   },
   methods: {
     sendPOrequest(url) {
@@ -164,11 +168,19 @@ export default {
       this.$api
         .get(`/inventory/${this.plantId}/maintenance/plans/`)
         .then(data => {
-            this.tasks = data.data[0].tasks;
+            this.tasks = data.data[0].tasks
+            // console.log(this.tasks);
         })
         .catch(error => {
           console.log(error.message);
         });
+    },
+    clear(){
+      this.startDate = undefined
+      this.endDate = undefined
+      this.typeOfWork = null
+      this.price = null
+      this.description = null
     }
   },
   mounted() {

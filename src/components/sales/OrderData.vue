@@ -67,7 +67,7 @@
           <td>{{order.plant.price}}</td>
           <td>{{order.total}}</td>
           <td>
-            <router-link class="button is-success is-outlined" :to="`/edit-order/${order._id}`">Edit</router-link>
+            <router-link class="button is-success is-outlined" :to="`/edit-order/${order._id}`">Extend</router-link>
             <button
               v-if="order._links.accept"
               v-on:click="sendPOrequest(order._links.accept.href)"
@@ -111,8 +111,8 @@ export default {
   props: ["plantId"],
   data: function() {
     return {
-      customerEmail: "",
-      siteAddress: "",
+      customerEmail: null,
+      siteAddress: null,
       startDate: undefined,
       endDate: undefined,
       availablePlatnts: [],
