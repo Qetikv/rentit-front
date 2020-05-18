@@ -85,17 +85,17 @@
             >Reject</button>
             <button
               v-if="order._links.dispatch"
-              v-on:click="sendPOrequest(order._links.reject.href)"
+              v-on:click="sendPOrequest(order._links.dispatch.href)"
               class="button is-warnign is-outlined"
             >Dispatch</button>
             <button
               v-if="order._links.refuse"
-              v-on:click="sendPOrequest(order._links.reject.href)"
+              v-on:click="sendPOrequest(order._links.rerfuse.href)"
               class="button is-warnign is-outlined"
             >Refuse</button>
             <button
               v-if="order._links.deliver"
-              v-on:click="sendPOrequest(order._links.reject.href)"
+              v-on:click="sendPOrequest(order._links.deliver.href)"
               class="button is-warnign is-outlined"
             >Deliver</button>
           </td>
@@ -184,6 +184,7 @@ export default {
           .then(data => {
             console.log(data);
             this.getOrders();
+            this.clear()
           })
           .catch(error => {
             this.$buefy.snackbar.open({
@@ -202,6 +203,12 @@ export default {
         .catch(error => {
           console.log(error.message);
         });
+    },
+    clear(){
+      this.startDate = undefined
+      this.endDate = undefined
+      this.customerEmail = null
+      this.siteAddress = null
     }
   },
   mounted() {

@@ -155,6 +155,7 @@ export default {
           .then(data => {
             console.log(data);
             this.getTasks();
+            this.clear()
           })
           .catch(error => {
             this.$buefy.snackbar.open({
